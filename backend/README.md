@@ -47,25 +47,6 @@ The server will start running on `http://localhost:3000` (or the port specified 
 - `npm run test`: Runs the test suite
 - `npm run lint`: Lints the codebase
 
-## Project Structure
-
-```
-backend/
-├── src/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── services/
-│   ├── utils/
-│   ├── config/
-│   └── app.js
-├── tests/
-├── .eslintrc.js
-├── .prettierrc
-├── jest.config.js
-└── package.json
-```
 
 ## API Documentation
 
