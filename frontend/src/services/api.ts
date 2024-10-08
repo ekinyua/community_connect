@@ -7,6 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 })
 
 // Add a response interceptor for error handling
@@ -20,6 +21,7 @@ api.interceptors.response.use(
 
     }
     // Handle API errors
+    console.error(error)
     return Promise.reject(error.response.data)
   }
 )

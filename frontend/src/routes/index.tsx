@@ -35,7 +35,7 @@ export function CurrentUserInfo() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      setFetchError(null);
+      // setFetchError(null);
       try {
         await dispatch(fetchCurrentUser()).unwrap();
       } catch (err) {
