@@ -42,10 +42,7 @@ The server will start running on `http://localhost:3000` (or the port specified 
 
 ## Available Scripts
 
-- `npm run start`: Starts the server
-- `npm run dev`: Starts the server with nodemon for development
-- `npm run test`: Runs the test suite
-- `npm run lint`: Lints the codebase
+- `nodemon app`: Starts the server with nodemon for development
 
 
 ## API Documentation
