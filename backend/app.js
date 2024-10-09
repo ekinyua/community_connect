@@ -5,6 +5,7 @@ const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const authRoutes = require('./routes/authRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const { initializePassport } = require('./config/passport');
 
 const app = express();
@@ -35,6 +36,7 @@ initializePassport(passport);
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/profiles', profileRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
