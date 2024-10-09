@@ -7,12 +7,17 @@ const MongoStore = require('connect-mongo');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const { initializePassport } = require('./config/passport');
+const cors = require('cors');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 // Connect to MongoDB
 const dbURI = process.env.MONGODB_URI;
