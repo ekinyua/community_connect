@@ -1,53 +1,53 @@
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 
-exports.createProfile = async (req, res) => {
+exports.createOrUpdateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const existingProfile = await Profile.findOne({ user: userId });
-    if (existingProfile) {
-      return res.status(400).json({ message: 'Profile already exists for this user' });
+    let profile = await Profile.findOne({ user: userId });
+
+    if (profile) {
+      // Update existing profile
+      Object.assign(profile, req.body);
+      await profile.save();
+      res.json({ message: 'Profile updated successfully', profile });
+    } else {
+      // Create new profile
+      const profileData = { ...req.body, user: userId };
+      profile = await Profile.create(profileData);
+      res.status(201).json({ message: 'Profile created successfully', profile });
     }
-
-    const profileData = { ...req.body, user: userId };
-    const newProfile = await Profile.create(profileData);
-
-    res.status(201).json({ message: 'Profile created successfully', profile: newProfile });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating profile', error: error.message });
+    res.status(500).json({ message: 'Error creating/updating profile', error: error.message });
   }
 };
 
 exports.getProfile = async (req, res) => {
   try {
     const userId = req.params.userId || req.user._id;
-    const profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType');
+    let profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType basicProfile');
 
     if (!profile) {
-      return res.status(404).json({ message: 'Profile not found' });
+      // If no profile exists, create one with basic info from User model
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      profile = await Profile.create({
+        user: user._id,
+        bio: user.basicProfile.bio,
+        location: user.basicProfile.location,
+        profilePicture: user.basicProfile.profilePicture
+      });
+
+      // Populate the user field after creation
+      await profile.populate('user', 'username email userType basicProfile');
     }
 
     res.json({ profile });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
-  }
-};
-
-exports.updateProfile = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const profile = await Profile.findOne({ user: userId });
-
-    if (!profile) {
-      return res.status(404).json({ message: 'Profile not found' });
-    }
-
-    Object.assign(profile, req.body);
-    await profile.save();
-
-    res.json({ message: 'Profile updated successfully', profile });
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating profile', error: error.message });
   }
 };
 
@@ -66,9 +66,9 @@ exports.deleteProfile = async (req, res) => {
   }
 };
 
-exports.getAllProfiles = async (req, res) => {
+exports.searchProfiles = async (req, res) => {
   try {
-    const { userType, service, location } = req.query;
+    const { userType, service, location, day, time } = req.query;
     let query = {};
 
     if (userType) {
@@ -81,10 +81,19 @@ exports.getAllProfiles = async (req, res) => {
     if (location) {
       query.location = { $regex: location, $options: 'i' };
     }
+    if (day && time) {
+      query.availability = {
+        $elemMatch: {
+          day: day,
+          startTime: { $lte: time },
+          endTime: { $gte: time }
+        }
+      };
+    }
 
     const profiles = await Profile.find(query).populate('user', 'username email userType');
     res.json({ profiles });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching profiles', error: error.message });
+    res.status(500).json({ message: 'Error searching profiles', error: error.message });
   }
 };

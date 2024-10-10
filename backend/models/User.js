@@ -25,6 +25,16 @@ const userSchema = new mongoose.Schema({
     enum: ['consumer', 'business', 'artisan'],
     required: [true, 'Please specify user type'],
   },
+  basicProfile: {
+    bio: String,
+    location: String,
+    profilePicture: {
+      type: String,
+      default: 'default.jpg'
+    }
+  }
+}, {
+  timestamps: true
 });
 
 // Hash password before saving

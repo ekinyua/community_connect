@@ -1,10 +1,28 @@
-const passport = require('passport');
 const User = require('../models/User');
+const Profile = require('../models/Profile');
+const passport = require('passport');
 
 exports.signup = async (req, res, next) => {
   try {
-    const { username, email, password, userType } = req.body;
-    const user = await User.create({ username, email, password, userType });
+    const { username, email, password, userType, bio, location } = req.body;
+    const user = await User.create({ 
+      username, 
+      email, 
+      password, 
+      userType,
+      basicProfile: {
+        bio,
+        location
+      }
+    });
+
+    // Create a basic profile
+    await Profile.create({
+      user: user._id,
+      bio,
+      location
+    });
+
     req.login(user, (err) => {
       if (err) return next(err);
       res.status(201).json({ message: 'User created successfully', user: { id: user._id, username: user.username, email: user.email, userType: user.userType } });

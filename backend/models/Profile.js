@@ -20,10 +20,11 @@ const profileSchema = new mongoose.Schema({
     type: String,
     trim: true
   }],
-  availability: {
-    type: String,
-    trim: true
-  },
+  availability: [{
+    day: String,
+    startTime: String,
+    endTime: String
+  }],
   pricing: {
     type: String,
     trim: true
