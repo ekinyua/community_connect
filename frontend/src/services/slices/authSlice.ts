@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { authApi } from '@/services/api'
 import { LoginInput, SignUpInput } from '@/lib/schema'
+import { RootState } from '../store'
 
 interface User {
   id: string
@@ -135,5 +136,6 @@ const authSlice = createSlice({
   },
 })
 
+export const selectAuth = (state: RootState) => state.auth;
 
 export default authSlice.reducer

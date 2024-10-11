@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // Replace with your actual backend URL
+  baseURL: '/api', // Replace with your actual backend URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -66,13 +66,28 @@ export const authApi = {
   getCurrentUser: async () => {
     try {
       const response = await api.get('/auth/current-user'); // Ensure this endpoint matches your backend route
-      console.log(response);
+      // console.log(response);
       return response.data.user;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to fetch current user: ${error.message}`);
       }
       throw new Error('Failed to fetch current user: Unknown error');
+    }
+  }
+}
+
+export const profileApi = {
+  getProfile: async (userId: string) => {
+    try {
+      const response = await api.get(`/profile/${userId}`);
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch profile: ${error.message}`);
+      }
+      throw new Error('Failed to fetch profile: Unknown error');
     }
   }
 }

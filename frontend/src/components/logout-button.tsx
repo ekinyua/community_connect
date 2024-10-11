@@ -4,8 +4,13 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from './ui/button';
 import { useNavigate } from '@tanstack/react-router';
+import { cn } from '@/lib/utils';
 
-export default function LogoutButton() {
+interface LogoutButtonProps {
+  className?: string;
+}
+
+export default function LogoutButton({ className }: LogoutButtonProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { isLoading } = useSelector((state: RootState) => state.auth);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +29,10 @@ export default function LogoutButton() {
 
   return (
     <div>
-      <Button onClick={handleLogout} disabled={isLoading}>
+      <Button
+        onClick={handleLogout}
+        disabled={isLoading}
+        className={cn('', className)}>
         {isLoading ? 'Logging out...' : 'Logout'}
       </Button>
       {error && <p className="text-red-500 mt-2">{error}</p>}

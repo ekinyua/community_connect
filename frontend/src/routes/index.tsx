@@ -1,4 +1,4 @@
-import LogoutButton from '@/components/logout-button';
+import Navbar from '@/components/navbar';
 import {
   Card,
   CardContent,
@@ -13,15 +13,18 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const Route = createFileRoute('/')({
-  component: () => <Index />,
+  component: Index,
 });
 
-export default function Index() {
+function Index() {
   return (
     <>
-      <h1>Welcome to the Home Page</h1>
-      <CurrentUserInfo />
-      <LogoutButton />
+      <div className="mb-7">
+        <Navbar />
+      </div>
+      <div className="w-1/3 mx-auto">
+        <CurrentUserInfo />
+      </div>
     </>
   );
 }
@@ -35,7 +38,6 @@ export function CurrentUserInfo() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      // setFetchError(null);
       try {
         await dispatch(fetchCurrentUser()).unwrap();
       } catch (err) {
