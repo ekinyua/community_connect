@@ -6,6 +6,7 @@ import './index.css';
 import { routeTree } from './routeTree.gen';
 import { Provider } from 'react-redux';
 import { store } from './services/store';
+import { ThemeProvider } from './lib/theme-provider';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -23,9 +24,11 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <Provider store={store}>
+          <RouterProvider router={router} />
+        </Provider>
+      </ThemeProvider>
     </StrictMode>
   );
 }
