@@ -3,9 +3,10 @@ import { useNavigate } from '@tanstack/react-router';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Star, Search, Building, Palette } from "lucide-react"
+import { Star, Search, Building, Palette, LogOut, User } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from 'axios';
+import { authApi } from '@/services/api';
 
 interface Profile {
   _id: string;
@@ -23,11 +24,23 @@ const LandingPage: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'business' | 'artisan'>('all');
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    checkAuth();
     fetchProfiles();
   }, []);
+
+  const checkAuth = async () => {
+    try {
+      const user = await authApi.getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Authentication error:', error);
+      navigate({ to: '/login' });
+    }
+  };
 
   const fetchProfiles = async (search: string = '') => {
     try {
@@ -49,13 +62,40 @@ const LandingPage: React.FC = () => {
     navigate({ to: '/profile', params: { userId: profileId } });
   };
 
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      navigate({ to: '/login' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const handleNavigateToProfile = () => {
+    navigate({ to: '/profile' });
+  };
+
   const filteredProfiles = profiles.filter(profile => 
     activeTab === 'all' || profile.user.userType === activeTab
   );
 
+  if (!currentUser) {
+    return null; // or a loading spinner
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Welcome to Community Connect</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold">Welcome to Community Connect</h1>
+        <div className="flex gap-4">
+          <Button onClick={handleNavigateToProfile} variant="outline">
+            <User className="mr-2 h-4 w-4" /> Profile
+          </Button>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
+        </div>
+      </div>
       
       <form onSubmit={handleSearch} className="mb-8 relative">
         <Input
