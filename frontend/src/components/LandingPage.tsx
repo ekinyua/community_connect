@@ -8,6 +8,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from 'axios';
 import { authApi } from '@/services/api';
 
+interface Availability {
+  day: string;
+  startTime: string;
+  endTime: string;
+  _id: string;
+}
+
 interface Profile {
   _id: string;
   user: {
@@ -18,12 +25,18 @@ interface Profile {
   profilePicture: string;
   services: string[];
   rating?: number;
+  location?: string;
+  availability?: Availability[];
 }
 
 const LandingPage: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'business' | 'artisan'>('all');
+  const [searchParams, setSearchParams] = useState({
+    service: '',
+    type: 'all',
+    location: '',
+    availability: ''
+  });
   const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -42,10 +55,10 @@ const LandingPage: React.FC = () => {
     }
   };
 
-  const fetchProfiles = async (search: string = '') => {
+  const fetchProfiles = async () => {
     try {
       const response = await axios.get('/api/profiles/search', {
-        params: { service: search }
+        params: searchParams
       });
       setProfiles(response.data.profiles);
     } catch (error) {
@@ -55,7 +68,15 @@ const LandingPage: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchProfiles(searchTerm);
+    fetchProfiles();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleTypeChange = (value: string) => {
+    setSearchParams(prev => ({ ...prev, type: value }));
   };
 
   const handleProfileClick = (profileId: string) => {
@@ -75,9 +96,11 @@ const LandingPage: React.FC = () => {
     navigate({ to: '/profile' });
   };
 
-  const filteredProfiles = profiles.filter(profile => 
-    activeTab === 'all' || profile.user.userType === activeTab
-  );
+  const formatAvailability = (availability: Availability[]) => {
+    return availability.map(slot => 
+      `${slot.day} ${slot.startTime}-${slot.endTime}`
+    ).join(', ');
+  };
 
   if (!currentUser) {
     return null; // or a loading spinner
@@ -97,20 +120,34 @@ const LandingPage: React.FC = () => {
         </div>
       </div>
       
-      <form onSubmit={handleSearch} className="mb-8 relative">
+      <form onSubmit={handleSearch} className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
         <Input
           type="text"
+          name="service"
           placeholder="Search for services..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pr-10"
+          value={searchParams.service}
+          onChange={handleInputChange}
         />
-        <Button type="submit" variant="ghost" className="absolute right-0 top-0 h-full">
-          <Search className="h-5 w-5" />
+        <Input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={searchParams.location}
+          onChange={handleInputChange}
+        />
+        <Input
+          type="text"
+          name="availability"
+          placeholder="Availability (e.g., Monday)"
+          value={searchParams.availability}
+          onChange={handleInputChange}
+        />
+        <Button type="submit" className="w-full">
+          <Search className="mr-2 h-5 w-5" /> Search
         </Button>
       </form>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'all' | 'business' | 'artisan')} className="mb-8">
+      <Tabs value={searchParams.type} onValueChange={handleTypeChange} className="mb-8">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="business">Businesses</TabsTrigger>
@@ -119,13 +156,13 @@ const LandingPage: React.FC = () => {
       </Tabs>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProfiles.map((profile) => (
+        {profiles.map((profile) => (
           <Card key={profile._id} className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden" onClick={() => handleProfileClick(profile._id)}>
             <div className="aspect-video relative">
               <img
                 src={profile.profilePicture || "/default.png"}
                 alt={profile.user.username}
-                className="object-cover w-full h-full"
+                className="w-full h-full object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.onerror = null;
@@ -144,6 +181,10 @@ const LandingPage: React.FC = () => {
               <h2 className="text-xl font-semibold mb-1">{profile.user.username}</h2>
               <p className="text-sm text-gray-500 mb-2">{profile.services.join(', ')}</p>
               <p className="text-sm line-clamp-2">{profile.bio}</p>
+              {profile.location && <p className="text-sm mt-1">📍 {profile.location}</p>}
+              {profile.availability && profile.availability.length > 0 && (
+                <p className="text-sm mt-1 line-clamp-2">🕒 {formatAvailability(profile.availability)}</p>
+              )}
             </CardContent>
             <CardFooter className="justify-between">
               <div className="flex items-center">
@@ -156,8 +197,8 @@ const LandingPage: React.FC = () => {
         ))}
       </div>
       
-      {filteredProfiles.length === 0 && (
-        <p className="text-center text-gray-500 mt-8">No profiles found. Try a different search term or category.</p>
+      {profiles.length === 0 && (
+        <p className="text-center text-gray-500 mt-8">No profiles found. Try different search parameters.</p>
       )}
     </div>
   );
