@@ -11,7 +11,7 @@ interface Profile {
   _id: string;
   user: {
     username: string;
-    userType: 'business' | 'artisan';
+    userType: 'consumer' | 'business' | 'artisan';
   };
   bio: string;
   profilePicture: string;
@@ -70,7 +70,7 @@ const LandingPage: React.FC = () => {
         </Button>
       </form>
 
-      <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as 'all' | 'business' | 'artisan')} className="mb-8">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'all' | 'business' | 'artisan')} className="mb-8">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="business">Businesses</TabsTrigger>
@@ -83,16 +83,21 @@ const LandingPage: React.FC = () => {
           <Card key={profile._id} className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden" onClick={() => handleProfileClick(profile._id)}>
             <div className="aspect-video relative">
               <img
-                src={profile.profilePicture || `/api/placeholder/400/300`}
+                src={profile.profilePicture || "/default.png"}
                 alt={profile.user.username}
                 className="object-cover w-full h-full"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = "/default.png";
+                }}
               />
               <div className="absolute top-2 right-2 bg-white rounded-full p-1">
                 {profile.user.userType === 'business' ? (
                   <Building className="h-5 w-5 text-blue-500" />
-                ) : (
+                ) : profile.user.userType === 'artisan' ? (
                   <Palette className="h-5 w-5 text-purple-500" />
-                )}
+                ) : null}
               </div>
             </div>
             <CardContent className="pt-4">
