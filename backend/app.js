@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const { initializePassport } = require('./config/passport');
 const cors = require('cors');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ initializePassport(passport);
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
