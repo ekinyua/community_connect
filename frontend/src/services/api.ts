@@ -78,16 +78,29 @@ export const authApi = {
 }
 
 export const profileApi = {
-  getProfile: async (userId: string) => {
+  createOrUpdateProfile: async (profileData: unknown) => {
     try {
-      const response = await api.get(`/profile/${userId}`);
-      console.log(response);
-      return response.data;
+      const response = await api.post('/profiles/', profileData)
+      return response.data
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Failed to fetch profile: ${error.message}`);
+        throw new Error(`Failed to create/update profile: ${error.message}`)
       }
-      throw new Error('Failed to fetch profile: Unknown error');
+      throw new Error('Failed to create/update profile: Unknown error')
+    }
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getProfile: async (_userId?: string) => {
+    try {
+      // const url = userId ? `/profile/${userId}` : '/profile/me'
+      const response = await api.get('/profiles/me')
+      return response.data
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch profile: ${error.message}`)
+      }
+      throw new Error('Failed to fetch profile: Unknown error')
     }
   }
 }

@@ -60,7 +60,9 @@ export default function Navbar() {
                         alt={user.username}
                       />
                       <AvatarFallback>
-                        {user.username.slice(0, 2).toUpperCase()}
+                        {user.username
+                          ? user.username.slice(0, 2).toUpperCase()
+                          : 'NN'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
