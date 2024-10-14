@@ -16,6 +16,7 @@ import { Route as SignupImport } from './routes/signup'
 import { Route as ProfileImport } from './routes/profile'
 import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
+import { Route as ProfileProfileIdImport } from './routes/profile/profileId'
 
 // Create/Update Routes
 
@@ -42,6 +43,11 @@ const LoginRoute = LoginImport.update({
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileProfileIdRoute = ProfileProfileIdImport.update({
+  path: '/profileId',
+  getParentRoute: () => ProfileRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -83,49 +89,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesImport
       parentRoute: typeof rootRoute
     }
+    '/profile/profileId': {
+      id: '/profile/profileId'
+      path: '/profileId'
+      fullPath: '/profile/profileId'
+      preLoaderRoute: typeof ProfileProfileIdImport
+      parentRoute: typeof ProfileImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ProfileRouteChildren {
+  ProfileProfileIdRoute: typeof ProfileProfileIdRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileProfileIdRoute: ProfileProfileIdRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/profile' | '/signup' | '/updates'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/profile' | '/signup' | '/updates'
-  id: '__root__' | '/' | '/login' | '/profile' | '/signup' | '/updates'
+  to:
+    | '/'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  ProfileRoute: typeof ProfileRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   SignupRoute: typeof SignupRoute
   UpdatesRoute: typeof UpdatesRoute
 }
@@ -133,7 +179,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  ProfileRoute: ProfileRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   SignupRoute: SignupRoute,
   UpdatesRoute: UpdatesRoute,
 }
@@ -164,13 +210,20 @@ export const routeTree = rootRoute
       "filePath": "login.tsx"
     },
     "/profile": {
-      "filePath": "profile.tsx"
+      "filePath": "profile.tsx",
+      "children": [
+        "/profile/profileId"
+      ]
     },
     "/signup": {
       "filePath": "signup.tsx"
     },
     "/updates": {
       "filePath": "updates.tsx"
+    },
+    "/profile/profileId": {
+      "filePath": "profile/profileId.tsx",
+      "parent": "/profile"
     }
   }
 }

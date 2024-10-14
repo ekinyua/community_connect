@@ -1,5 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
+// src/routes/profile.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import ProfilePage from './profile/profileId'; 
 
 export const Route = createFileRoute('/profile')({
-  component: () => <div>Hello /profile!</div>,
-})
+  component: ProfilePage,
+});

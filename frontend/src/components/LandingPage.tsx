@@ -56,11 +56,9 @@ const LandingPage: React.FC = () => {
     }
   };
 
-  const fetchProfiles = async () => {
+  const fetchProfiles = async (params = searchParams) => {
     try {
-      const response = await axios.get('/api/profiles/search', {
-        params: searchParams,
-      });
+      const response = await axios.get('/api/profiles/search', { params });
       setProfiles(response.data.profiles);
     } catch (error) {
       console.error('Error fetching profiles:', error);
@@ -77,11 +75,16 @@ const LandingPage: React.FC = () => {
   };
 
   const handleTypeChange = (value: string) => {
-    setSearchParams((prev) => ({ ...prev, type: value }));
+    const newParams = { ...searchParams, type: value };
+    setSearchParams(newParams);
+    fetchProfiles(newParams);
   };
 
   const handleProfileClick = (profileId: string) => {
-    navigate({ to: '/profile', params: { userId: profileId } });
+    navigate({
+      to: '/profile/profileId',
+      params: { profileId }, 
+    });
   };
 
   const handleLogout = async () => {
@@ -106,7 +109,6 @@ const LandingPage: React.FC = () => {
   if (!currentUser) {
     return null; // or a loading spinner
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">

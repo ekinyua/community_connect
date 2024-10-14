@@ -3,6 +3,18 @@ import { authApi } from '@/services/api'
 import { LoginInput, SignUpInput } from '@/lib/schema'
 import { RootState } from '../store'
 
+export const checkAuthStatus = createAsyncThunk(
+  'auth/checkStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authApi.getCurrentUser();
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 interface User {
   id: string
   username: string
@@ -132,6 +144,18 @@ const authSlice = createSlice({
         state.isLoading = false
         state.error = action.payload as string
       })
+      .addCase(checkAuthStatus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuthStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(checkAuthStatus.rejected, (state) => {
+        state.isLoading = false;
+        // state.error = action.payload;
+        state.user = null;
+      });
 
   },
 })
