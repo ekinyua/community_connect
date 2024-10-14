@@ -11,12 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as UpdatesImport } from './routes/updates'
 import { Route as SignupImport } from './routes/signup'
 import { Route as ProfileImport } from './routes/profile'
 import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const UpdatesRoute = UpdatesImport.update({
+  path: '/updates',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignupRoute = SignupImport.update({
   path: '/signup',
@@ -70,6 +76,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
+    '/updates': {
+      id: '/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof UpdatesImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -80,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
 }
 
 export interface FileRoutesByTo {
@@ -87,6 +101,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
 }
 
 export interface FileRoutesById {
@@ -95,14 +110,15 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/profile' | '/signup'
+  fullPaths: '/' | '/login' | '/profile' | '/signup' | '/updates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/profile' | '/signup'
-  id: '__root__' | '/' | '/login' | '/profile' | '/signup'
+  to: '/' | '/login' | '/profile' | '/signup' | '/updates'
+  id: '__root__' | '/' | '/login' | '/profile' | '/signup' | '/updates'
   fileRoutesById: FileRoutesById
 }
 
@@ -111,6 +127,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  UpdatesRoute: typeof UpdatesRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -118,6 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  UpdatesRoute: UpdatesRoute,
 }
 
 export const routeTree = rootRoute
@@ -135,7 +153,8 @@ export const routeTree = rootRoute
         "/",
         "/login",
         "/profile",
-        "/signup"
+        "/signup",
+        "/updates"
       ]
     },
     "/": {
@@ -149,6 +168,9 @@ export const routeTree = rootRoute
     },
     "/signup": {
       "filePath": "signup.tsx"
+    },
+    "/updates": {
+      "filePath": "updates.tsx"
     }
   }
 }

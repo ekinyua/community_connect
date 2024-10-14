@@ -94,7 +94,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handleNavigateToProfile = () => {
-    navigate({ to: '/profile' });
+    navigate({ to: '/updates' });
   };
 
   const formatAvailability = (availability: Availability[]) => {
