@@ -104,3 +104,10 @@ export const profileApi = {
     }
   }
 }
+
+export const uploadApi = {
+  getUploadthingUrl: async () => {
+    const response = await api.get('/uploadthing')
+    return response.data
+  },
+}

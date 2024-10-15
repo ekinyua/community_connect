@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
   const handleProfileClick = (profileId: string) => {
     navigate({
       to: '/profile/profileId',
-      params: { profileId }, 
+      params: { profileId },
     });
   };
 
@@ -170,8 +170,7 @@ const LandingPage: React.FC = () => {
         {profiles.map((profile) => (
           <Card
             key={profile._id}
-            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
-            onClick={() => handleProfileClick(profile._id)}>
+            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden">
             <div className="aspect-video relative">
               <img
                 src={profile.profilePicture || '/default.png'}
@@ -213,8 +212,14 @@ const LandingPage: React.FC = () => {
                 <Star className="h-5 w-5 text-yellow-400 mr-1" />
                 <span>{profile.rating?.toFixed(1) || 'N/A'}</span>
               </div>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleProfileClick(profile._id)}>
                 View Profile
+              </Button>
+              <Button variant={'outline'} asChild>
+                <Link to="/chats">Chat</Link>
               </Button>
             </CardFooter>
           </Card>

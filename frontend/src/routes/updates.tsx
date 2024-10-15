@@ -11,7 +11,7 @@ import {
   fetchProfile,
   ProfileData,
 } from '@/services/slices/profileSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -21,6 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { fetchCurrentUser } from '@/services/slices/authSlice';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+// import { uploadApi } from '@/services/api';
+// import { UploadButton } from '@uploadthing/react';
 
 export const Route = createFileRoute('/updates')({
   component: Profile,
@@ -38,10 +42,16 @@ const daysOfWeek = [
 
 export default function Profile() {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { profile, isLoading, error } = useSelector(
-    (state: RootState) => state.profile
+  const { user, isLoading: isAuthLoading } = useSelector(
+    (state: RootState) => state.auth
   );
+  const {
+    profile,
+    isLoading: isProfileLoading,
+    error,
+  } = useSelector((state: RootState) => state.profile);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  // const [uploadthingUrl, setUploadthingUrl] = useState<string | null>(null);
 
   const { register, handleSubmit, control, setValue, watch } =
     useForm<ProfileData>();
@@ -55,9 +65,14 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (user) {
-      dispatch(fetchProfile(user.id));
+      dispatch(fetchProfile());
     }
+    // fetchUploadthingUrl();
   }, [dispatch, user]);
 
   useEffect(() => {
@@ -68,6 +83,8 @@ export default function Profile() {
       setValue('services', profile.services);
       setValue('availability', profile.availability);
       setValue('contactInfo', profile.contactInfo);
+      setValue('profilePicture', profile.profilePicture);
+      setAvatarPreview(profile.profilePicture);
     }
   }, [profile, setValue]);
 
@@ -75,9 +92,20 @@ export default function Profile() {
     dispatch(createOrUpdateProfile(data));
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  // const fetchUploadthingUrl = async () => {
+  //   try {
+  //     const data = await uploadApi.getUploadthingUrl();
+  //     setUploadthingUrl(data.url);
+  //   } catch (error) {
+  //     console.error('Failed to fetch uploadthing URL:', error);
+  //   }
+  // };
+
+  if (isAuthLoading) return <div>Checking authentication...</div>;
+  if (isProfileLoading) return <div>Loading profile...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!user || !profile) return <div>Please log in to view your profile.</div>;
+  if (!user) return <div>Please log in to view your profile.</div>;
+  if (!profile) return <div>No profile found. Please create a profile.</div>;
 
   return (
     <div className="px-5">
@@ -89,11 +117,40 @@ export default function Profile() {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 my-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="m-4">
+          <Card>
             <CardHeader>
               <CardTitle>User Profile</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <Avatar className="w-24 h-24">
+                  <AvatarImage
+                    src={
+                      avatarPreview || profile.profilePicture || '/default.png'
+                    }
+                    alt="Profile picture"
+                  />
+                  <AvatarFallback>{user.username[0]}</AvatarFallback>
+                </Avatar>
+                {/* <div>
+                  <Label>Update Profile Picture</Label>
+                  {uploadthingUrl && (
+                    <UploadButton
+                      endpoint="profilePicture"
+                      onClientUploadComplete={(res) => {
+                        if (res && res[0]) {
+                          setAvatarPreview(res[0].url);
+                          setValue('profilePicture', res[0].url);
+                        }
+                      }}
+                      onUploadError={(error: Error) => {
+                        console.error(error);
+                        alert('Error uploading file');
+                      }}
+                    />
+                  )}
+                </div> */}
+              </div>
               <div>
                 <Label htmlFor="username">Username</Label>
                 <Input id="username" value={profile.user.username} disabled />
