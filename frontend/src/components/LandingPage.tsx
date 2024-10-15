@@ -82,7 +82,7 @@ const LandingPage: React.FC = () => {
 
   const handleProfileClick = (profileId: string) => {
     navigate({
-      to: '/profile/profileId',
+      to: `/profile/${profileId}`,
       params: { profileId },
     });
   };

@@ -44,7 +44,7 @@ function ProfilePage({ profileId }: ProfilePageProps) {
 
   useEffect(() => {
     if (profileId) {
-      dispatch(fetchProfile(profileId));
+      dispatch(fetchProfile());
     }
   }, [dispatch, profileId]);
 
@@ -80,7 +80,7 @@ function ProfilePage({ profileId }: ProfilePageProps) {
   if (!profile) return <div>Profile not found.</div>;
 
   const isServiceProvider = profile.user.userType === 'business' || profile.user.userType === 'artisan';
-
+  console.log(profile)
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
