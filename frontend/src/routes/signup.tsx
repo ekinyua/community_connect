@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/services/store';
 import { Button } from '@/components/ui/button';
@@ -56,8 +56,10 @@ export default function SignUpForm() {
     <>
       <Form {...form}>
         <div className="flex flex-col justify-center w-1/3 mx-auto  h-screen ">
-          <h1 className="text-center text-4xl  font-bold ">Sign Up</h1>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8 border rounded-lg p-6 shadow-lg">
+            <h1 className="text-center text-4xl font-bold">Sign Up</h1>
             <FormField
               control={form.control}
               name="username"
@@ -131,9 +133,22 @@ export default function SignUpForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Signing up...' : 'Sign Up'}
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full max-w-xs">
+                {isLoading ? 'Signing up...' : 'Sign Up'}
+              </Button>
+            </div>
+            <div className="text-center">
+              <p>
+                Already have an account?{' '}
+                <Link to="/login" className="text-blue-500 hover:underline">
+                  Log in
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
         {error && <p className="text-red-500 mt-4">{error}</p>}

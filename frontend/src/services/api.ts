@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // Replace with your actual backend URL
+  baseURL: '/api', // Replace with your actual backend URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -66,7 +66,7 @@ export const authApi = {
   getCurrentUser: async () => {
     try {
       const response = await api.get('/auth/current-user'); // Ensure this endpoint matches your backend route
-      console.log(response);
+      // console.log(response);
       return response.data.user;
     } catch (error) {
       if (error instanceof Error) {
@@ -75,4 +75,39 @@ export const authApi = {
       throw new Error('Failed to fetch current user: Unknown error');
     }
   }
+}
+
+export const profileApi = {
+  createOrUpdateProfile: async (profileData: unknown) => {
+    try {
+      const response = await api.post('/profiles/', profileData)
+      return response.data
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to create/update profile: ${error.message}`)
+      }
+      throw new Error('Failed to create/update profile: Unknown error')
+    }
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getProfile: async (_userId?: string) => {
+    try {
+      // const url = userId ? `/profile/${userId}` : '/profile/me'
+      const response = await api.get('/profiles/me')
+      return response.data
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch profile: ${error.message}`)
+      }
+      throw new Error('Failed to fetch profile: Unknown error')
+    }
+  }
+}
+
+export const uploadApi = {
+  getUploadthingUrl: async () => {
+    const response = await api.get('/uploadthing')
+    return response.data
+  },
 }

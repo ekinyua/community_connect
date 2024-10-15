@@ -11,14 +11,28 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as UpdatesImport } from './routes/updates'
 import { Route as SignupImport } from './routes/signup'
+import { Route as ProfileImport } from './routes/profile'
 import { Route as LoginImport } from './routes/login'
+import { Route as ChatsImport } from './routes/chats'
 import { Route as IndexImport } from './routes/index'
+import { Route as ProfileProfileIdImport } from './routes/profile/profileId'
 
 // Create/Update Routes
 
+const UpdatesRoute = UpdatesImport.update({
+  path: '/updates',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SignupRoute = SignupImport.update({
   path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileRoute = ProfileImport.update({
+  path: '/profile',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -27,9 +41,19 @@ const LoginRoute = LoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ChatsRoute = ChatsImport.update({
+  path: '/chats',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileProfileIdRoute = ProfileProfileIdImport.update({
+  path: '/profileId',
+  getParentRoute: () => ProfileRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -43,11 +67,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/chats': {
+      id: '/chats'
+      path: '/chats'
+      fullPath: '/chats'
+      preLoaderRoute: typeof ChatsImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileImport
       parentRoute: typeof rootRoute
     }
     '/signup': {
@@ -57,49 +95,114 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
+    '/updates': {
+      id: '/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof UpdatesImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile/profileId': {
+      id: '/profile/profileId'
+      path: '/profileId'
+      fullPath: '/profile/profileId'
+      preLoaderRoute: typeof ProfileProfileIdImport
+      parentRoute: typeof ProfileImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ProfileRouteChildren {
+  ProfileProfileIdRoute: typeof ProfileProfileIdRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileProfileIdRoute: ProfileProfileIdRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
+  '/updates': typeof UpdatesRoute
+  '/profile/profileId': typeof ProfileProfileIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup'
+  fullPaths:
+    | '/'
+    | '/chats'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup'
-  id: '__root__' | '/' | '/login' | '/signup'
+  to:
+    | '/'
+    | '/chats'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
+  id:
+    | '__root__'
+    | '/'
+    | '/chats'
+    | '/login'
+    | '/profile'
+    | '/signup'
+    | '/updates'
+    | '/profile/profileId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatsRoute: typeof ChatsRoute
   LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   SignupRoute: typeof SignupRoute
+  UpdatesRoute: typeof UpdatesRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatsRoute: ChatsRoute,
   LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   SignupRoute: SignupRoute,
+  UpdatesRoute: UpdatesRoute,
 }
 
 export const routeTree = rootRoute
@@ -115,18 +218,37 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/chats",
         "/login",
-        "/signup"
+        "/profile",
+        "/signup",
+        "/updates"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/chats": {
+      "filePath": "chats.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
     },
+    "/profile": {
+      "filePath": "profile.tsx",
+      "children": [
+        "/profile/profileId"
+      ]
+    },
     "/signup": {
       "filePath": "signup.tsx"
+    },
+    "/updates": {
+      "filePath": "updates.tsx"
+    },
+    "/profile/profileId": {
+      "filePath": "profile/profileId.tsx",
+      "parent": "/profile"
     }
   }
 }
