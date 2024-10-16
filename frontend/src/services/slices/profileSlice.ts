@@ -1,112 +1,192 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { profileApi } from '../api'
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { profileApi } from "../api";
+import { RootState } from "../store";
 
 export interface Availability {
-  day: string
-  startTime: string
-  endTime: string
-  _id: string
+  day: string;
+  startTime: string;
+  endTime: string;
+  _id: string;
 }
 
 export interface ContactInfo {
   socialMedia: {
-    facebook?: string
-    instagram?: string
-  }
-  phone?: string
-  website?: string
+    facebook?: string;
+    instagram?: string;
+  };
+  phone?: string;
+  website?: string;
 }
 
 export interface ProfileData {
-  _id: string
+  _id: string;
   user: {
     basicProfile: {
-      profilePicture: string
-    }
-    _id: string
-    username: string
-    email: string
-    userType: string
-  }
-  services: string[]
-  profilePicture: string
-  availability: Availability[]
-  createdAt: string
-  updatedAt: string
-  __v: number
-  bio?: string
-  location?: string
-  pricing?: string
-  contactInfo: ContactInfo
+      profilePicture: string;
+    };
+    _id: string;
+    username: string;
+    email: string;
+    userType: string;
+  };
+  services: string[];
+  profilePicture: string;
+  availability: Availability[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  bio?: string;
+  location?: string;
+  pricing?: string;
+  contactInfo: ContactInfo;
 }
 
 interface ProfileState {
-  profile: ProfileData | null
-  isLoading: boolean
-  error: string | null
+  currentUserProfile: ProfileData | null;
+  viewedProfile: ProfileData | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: ProfileState = {
-  profile: null,
+  currentUserProfile: null,
+  viewedProfile: null,
   isLoading: false,
   error: null,
-}
+};
 
-export const fetchProfile = createAsyncThunk(
-  'profile/fetchProfile',
-  async (_, { rejectWithValue }) => {
+export const fetchUserProfile = createAsyncThunk(
+  "profile/fetchUserProfile",
+  async (userId: string, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    if (state.profile.currentUserProfile?.user._id === userId) {
+      return state.profile.currentUserProfile;
+    }
     try {
-      const response = await profileApi.getProfile()
-      return response.profile
+      console.log("profileSlice: Fetching user profile for ID:", userId);
+      const response = await profileApi.getUserProfile(userId);
+      console.log("profileSlice: Received profile data:", response);
+      return response.profile;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch profile')
+      console.error("Error fetching user profile:", error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Failed to fetch user profile"
+      );
     }
   }
-)
+);
+
+export const fetchCurrentUserProfile = createAsyncThunk(
+  "profile/fetchCurrentUserProfile",
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    if (state.profile.currentUserProfile) {
+      return state.profile.currentUserProfile;
+    }
+    try {
+      const response = await profileApi.getCurrentUserProfile();
+      console.log(
+        "profileSlice: Received current user profile data:",
+        response
+      );
+      return response.profile;
+    } catch (error) {
+      console.error("Error fetching current user profile:", error);
+      return rejectWithValue(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch current user profile"
+      );
+    }
+  }
+);
 
 export const createOrUpdateProfile = createAsyncThunk(
-  'profile/createOrUpdate',
+  "profile/createOrUpdate",
   async (profileData: Partial<ProfileData>, { rejectWithValue }) => {
     try {
-      const response = await profileApi.createOrUpdateProfile(profileData)
-      return response.profile
+      const response = await profileApi.createOrUpdateProfile(profileData);
+      return response.profile;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create/update profile')
+      return rejectWithValue(
+        error instanceof Error
+          ? error.message
+          : "Failed to create/update profile"
+      );
     }
   }
-)
+);
 
 const profileSlice = createSlice({
-  name: 'profile',
+  name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    clearViewedProfile: (state) => {
+      state.viewedProfile = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProfile.pending, (state) => {
-        state.isLoading = true
-        state.error = null
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action: PayloadAction<ProfileData>) => {
-        state.isLoading = false
-        state.profile = action.payload
+      .addCase(
+        fetchUserProfile.fulfilled,
+        (state, action: PayloadAction<ProfileData>) => {
+          state.isLoading = false;
+          state.viewedProfile = action.payload;
+          console.log("profileSlice: Viewed profile set:", action.payload);
+        }
+      )
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+        console.error(
+          "profileSlice: Error in fetchUserProfile:",
+          action.payload
+        );
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
-        state.isLoading = false
-        state.error = action.payload as string
+      .addCase(fetchCurrentUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchCurrentUserProfile.fulfilled,
+        (state, action: PayloadAction<ProfileData>) => {
+          state.isLoading = false;
+          state.currentUserProfile = action.payload;
+          console.log(
+            "profileSlice: Current user profile set:",
+            action.payload
+          );
+        }
+      )
+      .addCase(fetchCurrentUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+        console.error(
+          "profileSlice: Error in fetchCurrentUserProfile:",
+          action.payload
+        );
       })
       .addCase(createOrUpdateProfile.pending, (state) => {
-        state.isLoading = true
-        state.error = null
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(createOrUpdateProfile.fulfilled, (state, action: PayloadAction<ProfileData>) => {
-        state.isLoading = false
-        state.profile = action.payload
-      })
+      .addCase(
+        createOrUpdateProfile.fulfilled,
+        (state, action: PayloadAction<ProfileData>) => {
+          state.isLoading = false;
+          state.currentUserProfile = action.payload;
+        }
+      )
       .addCase(createOrUpdateProfile.rejected, (state, action) => {
-        state.isLoading = false
-        state.error = action.payload as string
-      })
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
-})
+});
 
-export default profileSlice.reducer
+export const { clearViewedProfile } = profileSlice.actions;
+export default profileSlice.reducer;

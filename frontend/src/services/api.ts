@@ -1,14 +1,11 @@
 import { LoginInput, SignUpInput } from '@/lib/schema'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: '/api', // Replace with your actual backend URL
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: 'http://localhost:3000/api',
   withCredentials: true,
-})
+});
 
 // Add a response interceptor for error handling
 api.interceptors.response.use(
@@ -91,16 +88,46 @@ export const profileApi = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getProfile: async (_userId?: string) => {
+  getCurrentUserProfile: async () => {
     try {
-      // const url = userId ? `/profile/${userId}` : '/profile/me'
-      const response = await api.get('/profiles/me')
-      return response.data
+      console.log('Fetching current user profile');
+      const response = await api.get('/profiles/me');
+      console.log('Received current user profile:', response.data);
+      return response.data;
     } catch (error) {
+      console.error('Error in getCurrentUserProfile:', error);
       if (error instanceof Error) {
-        throw new Error(`Failed to fetch profile: ${error.message}`)
+        throw new Error(`Failed to fetch current user profile: ${error.message}`);
       }
-      throw new Error('Failed to fetch profile: Unknown error')
+      throw new Error('Failed to fetch current user profile: Unknown error');
+    }
+  },
+
+  getUserProfile: async (userId: string) => {
+    try {
+      console.log('api: Sending request to fetch user profile:', userId);
+      const response = await api.get(`/profiles/user/${userId}`);
+      console.log('api: Received response:', JSON.stringify(response.data, null, 2));
+      return response.data;
+    } catch (error) {
+      console.error('api: Error in getUserProfile:', error);
+      if (axios.isAxiosError(error)) {
+        const axiosError: any = error as AxiosError;
+        if (axiosError.response) {
+          console.error('Data:', axiosError.response.data);
+          console.error('Status:', axiosError.response.status);
+          console.error('Headers:', axiosError.response.headers);
+          throw new Error(`Failed to fetch user profile: ${axiosError.response.data.message || axiosError.message}`);
+        } else if (axiosError.request) {
+          console.error('Request:', axiosError.request);
+          throw new Error('Failed to fetch user profile: No response received');
+        } else {
+          console.error('Error:', axiosError.message);
+          throw new Error(`Failed to fetch user profile: ${axiosError.message}`);
+        }
+      } else {
+        throw new Error('Failed to fetch user profile: Unknown error');
+      }
     }
   }
 }

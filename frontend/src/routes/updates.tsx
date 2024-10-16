@@ -1,17 +1,16 @@
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createFileRoute, Link } from '@tanstack/react-router';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/services/store';
 import {
   createOrUpdateProfile,
-  fetchProfile,
+  fetchCurrentUserProfile,
   ProfileData,
 } from '@/services/slices/profileSlice';
-import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -23,8 +22,6 @@ import {
 } from '@/components/ui/select';
 import { fetchCurrentUser } from '@/services/slices/authSlice';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-// import { uploadApi } from '@/services/api';
-// import { UploadButton } from '@uploadthing/react';
 
 export const Route = createFileRoute('/updates')({
   component: Profile,
@@ -46,12 +43,11 @@ export default function Profile() {
     (state: RootState) => state.auth
   );
   const {
-    profile,
+    currentUserProfile,
     isLoading: isProfileLoading,
     error,
   } = useSelector((state: RootState) => state.profile);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  // const [uploadthingUrl, setUploadthingUrl] = useState<string | null>(null);
 
   const { register, handleSubmit, control, setValue, watch } =
     useForm<ProfileData>();
@@ -70,43 +66,31 @@ export default function Profile() {
 
   useEffect(() => {
     if (user) {
-      dispatch(fetchProfile());
+      dispatch(fetchCurrentUserProfile());
     }
-    // fetchUploadthingUrl();
   }, [dispatch, user]);
 
   useEffect(() => {
-    if (profile) {
-      setValue('bio', profile.bio);
-      setValue('location', profile.location);
-      setValue('pricing', profile.pricing);
-      setValue('services', profile.services);
-      setValue('availability', profile.availability);
-      setValue('contactInfo', profile.contactInfo);
-      setValue('profilePicture', profile.profilePicture);
-      setAvatarPreview(profile.profilePicture);
+    if (currentUserProfile) {
+      setValue('bio', currentUserProfile.bio || '');
+      setValue('location', currentUserProfile.location || '');
+      setValue('pricing', currentUserProfile.pricing || '');
+      setValue('services', currentUserProfile.services || []);
+      setValue('availability', currentUserProfile.availability || []);
+      setValue('contactInfo', currentUserProfile.contactInfo || {});
+      setValue('profilePicture', currentUserProfile.profilePicture || '');
+      setAvatarPreview(currentUserProfile.profilePicture || null);
     }
-  }, [profile, setValue]);
+  }, [currentUserProfile, setValue]);
 
   const onSubmit = (data: ProfileData) => {
     dispatch(createOrUpdateProfile(data));
   };
 
-  // const fetchUploadthingUrl = async () => {
-  //   try {
-  //     const data = await uploadApi.getUploadthingUrl();
-  //     setUploadthingUrl(data.url);
-  //   } catch (error) {
-  //     console.error('Failed to fetch uploadthing URL:', error);
-  //   }
-  // };
-
-  if (isAuthLoading) return <div>Checking authentication...</div>;
-  if (isProfileLoading) return <div>Loading profile...</div>;
+  if (isAuthLoading || isProfileLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!user) return <div>Please log in to view your profile.</div>;
-  if (!profile) return <div>No profile found. Please create a profile.</div>;
-
+  if (!currentUserProfile) return <div>No profile found. Please create a profile.</div>;
   return (
     <div className="px-5">
       <div className="flex justify-between items-center my-4">
@@ -126,7 +110,7 @@ export default function Profile() {
                 <Avatar className="w-24 h-24">
                   <AvatarImage
                     src={
-                      avatarPreview || profile.profilePicture || '/default.png'
+                      avatarPreview || currentUserProfile.profilePicture || '/default.png'
                     }
                     alt="Profile picture"
                   />
@@ -153,15 +137,15 @@ export default function Profile() {
               </div>
               <div>
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" value={profile.user.username} disabled />
+                <Input id="username" value={currentUserProfile.user.username} disabled />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" value={profile.user.email} disabled />
+                <Input id="email" value={currentUserProfile.user.email} disabled />
               </div>
               <div>
                 <Label htmlFor="userType">User Type</Label>
-                <Input id="userType" value={profile.user.userType} disabled />
+                <Input id="userType" value={currentUserProfile.user.userType} disabled />
               </div>
               <div>
                 <Label htmlFor="bio">Bio</Label>

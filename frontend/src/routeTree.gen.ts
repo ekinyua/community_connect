@@ -17,7 +17,7 @@ import { Route as ProfileImport } from './routes/profile'
 import { Route as LoginImport } from './routes/login'
 import { Route as ChatsImport } from './routes/chats'
 import { Route as IndexImport } from './routes/index'
-import { Route as ProfileProfileIdImport } from './routes/profile/profileId'
+import { Route as ProfileUserIdImport } from './routes/profile/$userId'
 
 // Create/Update Routes
 
@@ -51,8 +51,8 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProfileProfileIdRoute = ProfileProfileIdImport.update({
-  path: '/profileId',
+const ProfileUserIdRoute = ProfileUserIdImport.update({
+  path: '/$userId',
   getParentRoute: () => ProfileRoute,
 } as any)
 
@@ -102,11 +102,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesImport
       parentRoute: typeof rootRoute
     }
-    '/profile/profileId': {
-      id: '/profile/profileId'
-      path: '/profileId'
-      fullPath: '/profile/profileId'
-      preLoaderRoute: typeof ProfileProfileIdImport
+    '/profile/$userId': {
+      id: '/profile/$userId'
+      path: '/$userId'
+      fullPath: '/profile/$userId'
+      preLoaderRoute: typeof ProfileUserIdImport
       parentRoute: typeof ProfileImport
     }
   }
@@ -115,11 +115,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface ProfileRouteChildren {
-  ProfileProfileIdRoute: typeof ProfileProfileIdRoute
+  ProfileUserIdRoute: typeof ProfileUserIdRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
-  ProfileProfileIdRoute: ProfileProfileIdRoute,
+  ProfileUserIdRoute: ProfileUserIdRoute,
 }
 
 const ProfileRouteWithChildren =
@@ -132,7 +132,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
-  '/profile/profileId': typeof ProfileProfileIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -142,7 +142,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
-  '/profile/profileId': typeof ProfileProfileIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
 }
 
 export interface FileRoutesById {
@@ -153,7 +153,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
-  '/profile/profileId': typeof ProfileProfileIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
 }
 
 export interface FileRouteTypes {
@@ -165,7 +165,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
-    | '/profile/profileId'
+    | '/profile/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -174,7 +174,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
-    | '/profile/profileId'
+    | '/profile/$userId'
   id:
     | '__root__'
     | '/'
@@ -183,7 +183,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
-    | '/profile/profileId'
+    | '/profile/$userId'
   fileRoutesById: FileRoutesById
 }
 
@@ -237,7 +237,7 @@ export const routeTree = rootRoute
     "/profile": {
       "filePath": "profile.tsx",
       "children": [
-        "/profile/profileId"
+        "/profile/$userId"
       ]
     },
     "/signup": {
@@ -246,8 +246,8 @@ export const routeTree = rootRoute
     "/updates": {
       "filePath": "updates.tsx"
     },
-    "/profile/profileId": {
-      "filePath": "profile/profileId.tsx",
+    "/profile/$userId": {
+      "filePath": "profile/$userId.tsx",
       "parent": "/profile"
     }
   }

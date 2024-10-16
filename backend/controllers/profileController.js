@@ -24,30 +24,55 @@ exports.createOrUpdateProfile = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const userId = req.params.userId || req.user._id;
+    const userId = req.params.userId;
+    if (!userId) {
+      console.log('Backend: User ID is missing in the request');
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    console.log('Backend: Fetching profile for user ID:', userId);
+    
     let profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType basicProfile');
 
     if (!profile) {
-      // If no profile exists, create one with basic info from User model
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+      console.log('Backend: No profile found for user ID:', userId);
+      return res.status(404).json({ message: 'Profile not found' });
+    }
 
+    console.log('Backend: Sending profile:', JSON.stringify(profile, null, 2));
+    res.json({ profile });
+  } catch (error) {
+    console.error('Backend: Error in getProfile:', error);
+    res.status(500).json({ message: 'Error fetching profile', error: error.message });
+  }
+};
+
+// new function to get the current user's profile
+exports.getCurrentUserProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    console.log('Fetching current user profile for ID:', userId);
+    
+    let profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType basicProfile');
+
+    if (!profile) {
+      console.log('No profile found, creating a new one');
+      
       profile = await Profile.create({
-        user: user._id,
-        bio: user.basicProfile.bio,
-        location: user.basicProfile.location,
-        profilePicture: user.basicProfile.profilePicture
+        user: userId,
+        bio: req.user.basicProfile?.bio || '',
+        location: req.user.basicProfile?.location || '',
+        profilePicture: req.user.basicProfile?.profilePicture || 'default.jpg'
       });
 
-      // Populate the user field after creation
       await profile.populate('user', 'username email userType basicProfile');
     }
 
+    console.log('Sending current user profile:', profile);
     res.json({ profile });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching profile', error: error.message });
+    console.error('Error in getCurrentUserProfile:', error);
+    res.status(500).json({ message: 'Error fetching current user profile', error: error.message });
   }
 };
 

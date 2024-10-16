@@ -8,6 +8,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import axios from 'axios';
 import { authApi } from '@/services/api';
 import { ModeToggle } from './mode-toggle';
+import { AppDispatch } from '@/services/store';
+import { useDispatch } from 'react-redux';
+import { fetchUserProfile } from '@/services/slices/profileSlice';
 
 interface Availability {
   day: string;
@@ -19,6 +22,7 @@ interface Availability {
 interface Profile {
   _id: string;
   user: {
+    _id: string;
     username: string;
     userType: 'consumer' | 'business' | 'artisan';
   };
@@ -31,6 +35,8 @@ interface Profile {
 }
 
 const LandingPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [searchParams, setSearchParams] = useState({
     service: '',
@@ -39,7 +45,6 @@ const LandingPage: React.FC = () => {
     availability: '',
   });
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
@@ -80,10 +85,12 @@ const LandingPage: React.FC = () => {
     fetchProfiles(newParams);
   };
 
-  const handleProfileClick = (profileId: string) => {
+  const handleProfileClick = (userId: string) => {
+    console.log('LandingPage: Clicked user ID:', userId);
+    dispatch(fetchUserProfile(userId));
     navigate({
-      to: `/profile/${profileId}`,
-      params: { profileId },
+      to: '/profile/$userId',
+      params: { userId },
     });
   };
 
@@ -215,7 +222,7 @@ const LandingPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleProfileClick(profile._id)}>
+                onClick={() => handleProfileClick(profile.user._id)}>
                 View Profile
               </Button>
               <Button variant={'outline'} asChild>

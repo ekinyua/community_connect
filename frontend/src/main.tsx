@@ -1,12 +1,12 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import './index.css';
-// Import the generated route tree
 import { routeTree } from './routeTree.gen';
-import { Provider } from 'react-redux';
-import { store } from './services/store';
+import { Provider, useDispatch } from 'react-redux';
+import { AppDispatch, store } from './services/store';
 import { ThemeProvider } from './lib/theme-provider';
+import { fetchCurrentUserProfile } from './services/slices/profileSlice';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -18,6 +18,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+const AppWrapper = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUserProfile());
+  }, [dispatch]);
+
+  return <RouterProvider router={router} />;
+};
+
 // Render the app
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
@@ -26,7 +36,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <Provider store={store}>
-          <RouterProvider router={router} />
+          <AppWrapper />
         </Provider>
       </ThemeProvider>
     </StrictMode>
