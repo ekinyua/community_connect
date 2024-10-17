@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as UpdatesImport } from './routes/updates'
 import { Route as SignupImport } from './routes/signup'
 import { Route as ProfileImport } from './routes/profile'
+import { Route as MessagesImport } from './routes/messages'
 import { Route as LoginImport } from './routes/login'
 import { Route as ChatsImport } from './routes/chats'
 import { Route as IndexImport } from './routes/index'
@@ -34,6 +35,11 @@ const SignupRoute = SignupImport.update({
 
 const ProfileRoute = ProfileImport.update({
   path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MessagesRoute = MessagesImport.update({
+  path: '/messages',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -85,6 +91,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesImport
       parentRoute: typeof rootRoute
     }
     '/profile': {
@@ -142,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
@@ -153,6 +167,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
@@ -165,6 +180,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/chats': typeof ChatsRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
@@ -178,6 +194,7 @@ export interface FileRouteTypes {
     | '/'
     | '/chats'
     | '/login'
+    | '/messages'
     | '/profile'
     | '/signup'
     | '/updates'
@@ -188,6 +205,7 @@ export interface FileRouteTypes {
     | '/'
     | '/chats'
     | '/login'
+    | '/messages'
     | '/profile'
     | '/signup'
     | '/updates'
@@ -198,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/chats'
     | '/login'
+    | '/messages'
     | '/profile'
     | '/signup'
     | '/updates'
@@ -210,6 +229,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatsRoute: typeof ChatsRoute
   LoginRoute: typeof LoginRoute
+  MessagesRoute: typeof MessagesRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   SignupRoute: typeof SignupRoute
   UpdatesRoute: typeof UpdatesRoute
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatsRoute: ChatsRoute,
   LoginRoute: LoginRoute,
+  MessagesRoute: MessagesRoute,
   ProfileRoute: ProfileRouteWithChildren,
   SignupRoute: SignupRoute,
   UpdatesRoute: UpdatesRoute,
@@ -241,6 +262,7 @@ export const routeTree = rootRoute
         "/",
         "/chats",
         "/login",
+        "/messages",
         "/profile",
         "/signup",
         "/updates",
@@ -255,6 +277,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/messages": {
+      "filePath": "messages.tsx"
     },
     "/profile": {
       "filePath": "profile.tsx",

@@ -127,6 +127,7 @@ const LandingPage: React.FC = () => {
           <Button onClick={handleNavigateToProfile} variant="outline">
             <User className="mr-2 h-4 w-4" /> Profile
           </Button>
+          {/* <Link to="/messages" className="nav-link">Messages</Link> */}
           <Button onClick={handleLogout} variant="outline">
             <LogOut className="mr-2 h-4 w-4" /> Logout
           </Button>

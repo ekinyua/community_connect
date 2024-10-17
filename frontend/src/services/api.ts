@@ -216,6 +216,15 @@ export const chatApi = {
       throw error;
     }
   },
+  getMessageList: async () => {
+    try {
+      const response = await api.get('/chat/list'); // Adjust this endpoint as needed
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching message list:', error);
+      throw error;
+    }
+  },
 
   sendMessage: async (receiverId: string, content: string) => {
     try {

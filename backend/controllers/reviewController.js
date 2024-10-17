@@ -3,17 +3,16 @@ const User = require('../models/User');
 
 exports.createReview = async (req, res) => {
   try {
-    const { revieweeId, rating, comment, service } = req.body;
-    const reviewerId = req.user._id;
+    const { reviewee, rating, comment, service } = req.body;
+    const reviewer = req.user._id;
 
-    const reviewee = await User.findById(revieweeId);
-    if (!reviewee || (reviewee.userType !== 'business' && reviewee.userType !== 'artisan')) {
-      return res.status(400).json({ message: 'Invalid reviewee' });
+    if (!reviewer) {
+      return res.status(401).json({ message: 'Authentication required' });
     }
 
     const review = await Review.create({
-      reviewer: reviewerId,
-      reviewee: revieweeId,
+      reviewer,
+      reviewee,
       rating,
       comment,
       service
@@ -21,6 +20,7 @@ exports.createReview = async (req, res) => {
 
     res.status(201).json({ message: 'Review created successfully', review });
   } catch (error) {
+    console.error('Error creating review:', error);
     res.status(500).json({ message: 'Error creating review', error: error.message });
   }
 };

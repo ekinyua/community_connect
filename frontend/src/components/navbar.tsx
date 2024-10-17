@@ -45,6 +45,7 @@ export default function Navbar() {
                 Home
               </Link>
               {/* Add more navigation items here */}
+              
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
