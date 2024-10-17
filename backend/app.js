@@ -12,6 +12,7 @@ const profileRoutes = require('./routes/profileRoutes');
 const { initializePassport } = require('./config/passport');
 const cors = require('cors');
 const reviewRoutes = require('./routes/reviewRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -38,21 +39,12 @@ io.on('connection', (socket) => {
     socket.join(userId);
   });
 
-  socket.on('sendMessage', async ({ senderId, receiverId, content }) => {
-    const message = new Message({
-      sender: senderId,
-      receiver: receiverId,
-      content
-    });
-    await message.save();
-
-    io.to(receiverId).emit('newMessage', message);
-  });
-
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
 });
+
+app.set('io', io);
 
 // Connect to MongoDB
 const dbURI = process.env.MONGODB_URI;
@@ -79,6 +71,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

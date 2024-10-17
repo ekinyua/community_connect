@@ -18,21 +18,6 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-exports.markAsRead = async (req, res) => {
-  try {
-    const { messageId } = req.params;
-    const message = await Message.findByIdAndUpdate(messageId, { read: true }, { new: true });
-
-    if (!message) {
-      return res.status(404).json({ message: 'Message not found' });
-    }
-
-    res.json({ message: 'Message marked as read', message });
-  } catch (error) {
-    res.status(500).json({ message: 'Error marking message as read', error: error.message });
-  }
-};
-
 exports.sendMessage = async (req, res) => {
   try {
     const { receiverId, content } = req.body;
@@ -45,11 +30,26 @@ exports.sendMessage = async (req, res) => {
     });
     await message.save();
 
-    // to emit the message via WebSocket here:
-    // req.app.get('io').to(receiverId).emit('newMessage', message);
+    // Emit the message via WebSocket
+    req.app.get('io').to(receiverId.toString()).emit('newMessage', message);
 
     res.status(201).json({ message: 'Message sent successfully', data: message });
   } catch (error) {
     res.status(500).json({ message: 'Error sending message', error: error.message });
+  }
+};
+
+exports.markAsRead = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const message = await Message.findByIdAndUpdate(messageId, { read: true }, { new: true });
+
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    res.json({ message: 'Message marked as read', data: message });
+  } catch (error) {
+    res.status(500).json({ message: 'Error marking message as read', error: error.message });
   }
 };

@@ -4,8 +4,8 @@ const bookingController = require('../controllers/bookingController');
 const { ensureAuthenticated } = require('../middleware/auth');
 
 router.post('/', ensureAuthenticated, bookingController.createBooking);
-router.get('/my-bookings', ensureAuthenticated, bookingController.getBookingsForUser);
-router.get('/provider-bookings', ensureAuthenticated, bookingController.getBookingsForServiceProvider);
-router.put('/update-status', ensureAuthenticated, bookingController.updateBookingStatus);
+router.get('/user', ensureAuthenticated, bookingController.getBookingsForUser);
+router.get('/provider', ensureAuthenticated, bookingController.getBookingsForServiceProvider);
+router.put('/status', ensureAuthenticated, bookingController.updateBookingStatus);
 
 module.exports = router;

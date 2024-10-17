@@ -8,7 +8,7 @@ exports.createBooking = async (req, res) => {
     // Create a new booking
     const booking = await Booking.create({
       consumer: req.user._id,  // The logged-in user is the consumer
-      serviceProvider: serviceProviderId,  // The service provider's user ID
+      serviceProvider: serviceProviderId,
       service,
       date,
       startTime,
