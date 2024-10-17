@@ -16,6 +16,7 @@ export const checkAuthStatus = createAsyncThunk(
 );
 
 interface User {
+  _id: string;
   id: string
   username: string
   email: string

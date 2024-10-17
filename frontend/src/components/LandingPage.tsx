@@ -217,7 +217,7 @@ const LandingPage: React.FC = () => {
             <CardFooter className="justify-between">
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-400 mr-1" />
-                <span>{profile.rating?.toFixed(1) || 'N/A'}</span>
+                <span>{profile.rating ? profile.rating.toFixed(1) : 'N/A'}</span>
               </div>
               <Button
                 variant="outline"

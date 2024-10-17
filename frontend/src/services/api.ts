@@ -1,4 +1,5 @@
 import { LoginInput, SignUpInput } from '@/lib/schema'
+import { Booking, Review } from '@/types';
 import axios, { AxiosError } from 'axios'
 
 // Create an axios instance with a base URL
@@ -131,6 +132,111 @@ export const profileApi = {
     }
   }
 }
+
+export const bookingApi = {
+  createBooking: async (bookingData: Omit<Booking, '_id'>) => {
+    try {
+      const response = await api.post('/bookings', bookingData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      throw error;
+    }
+  },
+
+  getUserBookings: async () => {
+    try {
+      const response = await api.get('/bookings/user');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+      throw error;
+    }
+  },
+
+  updateBookingStatus: async (bookingId: string, status: Booking['status']) => {
+    try {
+      const response = await api.put(`/bookings/status`, { bookingId, status });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      throw error;
+    }
+  },
+};
+
+export const reviewApi = {
+  createReview: async (reviewData: Omit<Review, '_id' | 'createdAt'>) => {
+    try {
+      const response = await api.post('/reviews', reviewData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating review:', error);
+      throw error;
+    }
+  },
+
+  getReviews: async (userId: string) => {
+    try {
+      const response = await api.get(`/reviews/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      throw error;
+    }
+  },
+
+  updateReview: async (reviewId: string, reviewData: Partial<Review>) => {
+    try {
+      const response = await api.put(`/reviews/${reviewId}`, reviewData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating review:', error);
+      throw error;
+    }
+  },
+
+  deleteReview: async (reviewId: string) => {
+    try {
+      await api.delete(`/reviews/${reviewId}`);
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      throw error;
+    }
+  },
+};
+
+export const chatApi = {
+  getMessages: async (userId: string) => {
+    try {
+      const response = await api.get(`/chat/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
+  },
+
+  sendMessage: async (receiverId: string, content: string) => {
+    try {
+      const response = await api.post('/chat/send', { receiverId, content });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  },
+
+  markAsRead: async (messageId: string) => {
+    try {
+      const response = await api.put(`/chat/${messageId}/read`);
+      return response.data;
+    } catch (error) {
+      console.error('Error marking message as read:', error);
+      throw error;
+    }
+  },
+};
 
 export const uploadApi = {
   getUploadthingUrl: async () => {

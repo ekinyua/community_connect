@@ -1,13 +1,20 @@
 export interface Review {
   _id: string;
-  reviewer: {
-    _id: string;
-    username: string;
-  };
+  reviewer: string;
   reviewee: string;
   rating: number;
   comment: string;
-  service: string;
   createdAt: string;
-  updatedAt: string;
+}
+
+export interface Booking {
+  _id: string;
+  consumer: string;
+  serviceProvider: string;
+  service: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  notes?: string;
 }
