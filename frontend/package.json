@@ -33,6 +33,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "react-redux": "^9.1.2",
+    "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "vinxi": "^0.4.3",

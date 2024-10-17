@@ -18,6 +18,7 @@ import { Route as LoginImport } from './routes/login'
 import { Route as ChatsImport } from './routes/chats'
 import { Route as IndexImport } from './routes/index'
 import { Route as ProfileUserIdImport } from './routes/profile/$userId'
+import { Route as ChatUserIdImport } from './routes/chat/$userId'
 
 // Create/Update Routes
 
@@ -54,6 +55,11 @@ const IndexRoute = IndexImport.update({
 const ProfileUserIdRoute = ProfileUserIdImport.update({
   path: '/$userId',
   getParentRoute: () => ProfileRoute,
+} as any)
+
+const ChatUserIdRoute = ChatUserIdImport.update({
+  path: '/chat/$userId',
+  getParentRoute: () => rootRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -102,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesImport
       parentRoute: typeof rootRoute
     }
+    '/chat/$userId': {
+      id: '/chat/$userId'
+      path: '/chat/$userId'
+      fullPath: '/chat/$userId'
+      preLoaderRoute: typeof ChatUserIdImport
+      parentRoute: typeof rootRoute
+    }
     '/profile/$userId': {
       id: '/profile/$userId'
       path: '/$userId'
@@ -132,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/chat/$userId': typeof ChatUserIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 
@@ -142,6 +156,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/chat/$userId': typeof ChatUserIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 
@@ -153,6 +168,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRouteWithChildren
   '/signup': typeof SignupRoute
   '/updates': typeof UpdatesRoute
+  '/chat/$userId': typeof ChatUserIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 
@@ -165,6 +181,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
+    | '/chat/$userId'
     | '/profile/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,6 +191,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
+    | '/chat/$userId'
     | '/profile/$userId'
   id:
     | '__root__'
@@ -183,6 +201,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/updates'
+    | '/chat/$userId'
     | '/profile/$userId'
   fileRoutesById: FileRoutesById
 }
@@ -194,6 +213,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRouteWithChildren
   SignupRoute: typeof SignupRoute
   UpdatesRoute: typeof UpdatesRoute
+  ChatUserIdRoute: typeof ChatUserIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRouteWithChildren,
   SignupRoute: SignupRoute,
   UpdatesRoute: UpdatesRoute,
+  ChatUserIdRoute: ChatUserIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -222,7 +243,8 @@ export const routeTree = rootRoute
         "/login",
         "/profile",
         "/signup",
-        "/updates"
+        "/updates",
+        "/chat/$userId"
       ]
     },
     "/": {
@@ -245,6 +267,9 @@ export const routeTree = rootRoute
     },
     "/updates": {
       "filePath": "updates.tsx"
+    },
+    "/chat/$userId": {
+      "filePath": "chat/$userId.tsx"
     },
     "/profile/$userId": {
       "filePath": "profile/$userId.tsx",

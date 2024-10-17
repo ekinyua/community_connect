@@ -226,7 +226,7 @@ const LandingPage: React.FC = () => {
                 View Profile
               </Button>
               <Button variant={'outline'} asChild>
-                <Link to="/chats">Chat</Link>
+                <Link to={`/chat/${profile.user._id}`}>Chat</Link>
               </Button>
             </CardFooter>
           </Card>
