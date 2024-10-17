@@ -171,7 +171,7 @@ export const reviewApi = {
       const response = await api.post('/reviews', reviewData);
       return response.data;
     } catch (error) {
-      console.error('Error creating review:', error);
+      console.error('Error in reviewApi.createReview:', error);
       throw error;
     }
   },

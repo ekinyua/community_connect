@@ -5,6 +5,7 @@ import { fetchReviews, createReview } from '@/services/slices/reviewSlice';
 import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/hooks/use-toast';
 
 interface RatingSystemProps {
   userId: string;
@@ -13,7 +14,7 @@ interface RatingSystemProps {
 const RatingSystem: React.FC<RatingSystemProps> = ({ userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { reviews, isLoading, error } = useSelector((state: RootState) => state.review);
-  const currentUser = useSelector((state: RootState) => state.auth.user); // Assume we have the current user in auth state
+  const currentUser = useSelector((state: RootState) => state.auth.user?.user);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
@@ -21,19 +22,35 @@ const RatingSystem: React.FC<RatingSystemProps> = ({ userId }) => {
     dispatch(fetchReviews(userId));
   }, [dispatch, userId]);
 
-  const handleSubmitReview = () => {
-    if (currentUser) {
-      dispatch(createReview({
-        reviewer: currentUser._id,
-        reviewee: userId,
-        rating,
-        comment
-      }));
-      setRating(0);
-      setComment('');
+  const handleSubmitReview = async () => {
+    console.log('Current user:', currentUser);
+    if (currentUser && currentUser.id) {
+      try {
+        await dispatch(createReview({
+          reviewee: userId,
+          rating,
+          comment,
+        })).unwrap();
+        setRating(0);
+        setComment('');
+        toast({
+          title: "Review Submitted",
+          description: "Your review has been successfully submitted.",
+        });
+      } catch (error: any) {
+        console.error('Error submitting review:', error);
+        toast({
+          title: "Error",
+          description: error.message || "An error occurred while submitting the review.",
+          variant: "destructive",
+        });
+      }
     } else {
-      console.error('No current user found');
-      // You might want to show an error message to the user here
+      toast({
+        title: "Error",
+        description: "You must be logged in to submit a review.",
+        variant: "destructive",
+      });
     }
   };
 

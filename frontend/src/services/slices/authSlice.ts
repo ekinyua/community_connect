@@ -16,24 +16,29 @@ export const checkAuthStatus = createAsyncThunk(
 );
 
 interface User {
-  _id: string;
-  id: string
-  username: string
-  email: string
-  userType: 'consumer' | 'business' | 'artisan'
+  _id: string,
+  id: string;
+  username: string;
+  email: string;
+  userType: string;
+}
+
+interface AuthResponse {
+  message: string;
+  user: User;
 }
 
 interface AuthState {
-  user: User | null
-  isLoading: boolean
-  error: string | null
+  user: AuthResponse | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
-}
+};
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
@@ -98,7 +103,7 @@ const authSlice = createSlice({
         state.isLoading = true
         state.error = null
       })
-      .addCase(signUp.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(signUp.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         state.isLoading = false
         state.user = action.payload
       })
@@ -111,9 +116,10 @@ const authSlice = createSlice({
         state.isLoading = true
         state.error = null
       })
-      .addCase(login.fulfilled, (state, action: PayloadAction<User>) => {
-        state.isLoading = false
-        state.user = action.payload
+      .addCase(login.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        console.log('User logged in:', action.payload);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false
@@ -137,7 +143,7 @@ const authSlice = createSlice({
         state.error = null
       })
       //fetchCurrentUser Reducers
-      .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         state.isLoading = false
         state.user = action.payload
       })

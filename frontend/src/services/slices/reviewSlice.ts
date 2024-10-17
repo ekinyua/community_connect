@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { reviewApi } from '../api';
+import { RootState } from '../store';
 
 interface Review {
   _id: string;
@@ -24,11 +25,19 @@ const initialState: ReviewState = {
 
 export const createReview = createAsyncThunk(
   'review/createReview',
-  async (reviewData: Omit<Review, '_id' | 'createdAt'>, { rejectWithValue }) => {
+  async (reviewData: Omit<Review, '_id' | 'createdAt' | 'reviewer'>, { getState, rejectWithValue }) => {
     try {
-      const response = await reviewApi.createReview(reviewData);
+      const state = getState() as RootState;
+      const reviewer = state.auth.user?.user?.id;
+      console.log('Current state:', state);
+      console.log('Reviewer ID:', reviewer);
+      if (!reviewer) {
+        throw new Error('User not authenticated');
+      }
+      const response = await reviewApi.createReview({ ...reviewData, reviewer });
       return response.review;
     } catch (error) {
+      console.error('Error in createReview thunk:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create review');
     }
   }
