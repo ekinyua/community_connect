@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { authApi } from '@/services/api'
 import { LoginInput, SignUpInput } from '@/lib/schema'
 import { RootState } from '../store'
+import { ReactNode } from 'react';
 
 export const checkAuthStatus = createAsyncThunk(
   'auth/checkStatus',
@@ -24,6 +25,8 @@ interface User {
 }
 
 interface AuthResponse {
+  email: ReactNode;
+  username: string | undefined;
   message: string;
   user: User;
 }
