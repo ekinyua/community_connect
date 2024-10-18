@@ -2,22 +2,29 @@ const Booking = require('../models/Booking');
 const User = require('../models/User');
 
 exports.createBooking = async (req, res) => {
+  console.log('Received booking request:', req.body);
   try {
-    const { serviceProviderId, service, date, startTime, endTime, notes } = req.body;
+    const { serviceProvider, consumer, date, startTime, endTime, service, status, notes } = req.body;
+    
+    if (!serviceProvider) {
+      return res.status(400).json({ message: 'Service provider is required' });
+    }
 
-    // Create a new booking
-    const booking = await Booking.create({
-      consumer: req.user._id,  // The logged-in user is the consumer
-      serviceProvider: serviceProviderId,
-      service,
+    const booking = new Booking({
+      serviceProvider,
+      consumer,
       date,
       startTime,
       endTime,
+      service,
+      status,
       notes
     });
 
-    res.status(201).json({ message: 'Booking created successfully', booking });
+    const savedBooking = await booking.save();
+    res.status(201).json({ message: 'Booking created successfully', booking: savedBooking });
   } catch (error) {
+    console.error('Error creating booking:', error);
     res.status(500).json({ message: 'Error creating booking', error: error.message });
   }
 };

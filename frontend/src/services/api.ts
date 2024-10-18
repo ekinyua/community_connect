@@ -135,14 +135,17 @@ export const profileApi = {
 
 export const bookingApi = {
   createBooking: async (bookingData: Omit<Booking, '_id'>) => {
+    console.log('Sending booking data to server:', bookingData);
     try {
       const response = await api.post('/bookings', bookingData);
+      console.log('Server response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error('Error in createBooking API call:', error);
       throw error;
     }
   },
+
 
   getUserBookings: async () => {
     try {

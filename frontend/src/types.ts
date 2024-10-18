@@ -10,8 +10,8 @@ export interface Review {
 
 export interface Booking {
   _id: string;
-  consumer: string;
-  serviceProvider: string;
+  consumer?: string;
+  serviceProvider?: string;
   service: string;
   date: string;
   startTime: string;

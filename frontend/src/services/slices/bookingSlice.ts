@@ -18,10 +18,13 @@ const initialState: BookingState = {
 export const bookAppointment = createAsyncThunk(
   'booking/bookAppointment',
   async (bookingData: Omit<Booking, '_id'>, { rejectWithValue }) => {
+    console.log('Received booking data in thunk:', bookingData);
     try {
       const response = await bookingApi.createBooking(bookingData);
+      console.log('API response:', response);
       return response.booking;
     } catch (error) {
+      console.error('Error in bookAppointment thunk:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create booking');
     }
   }
@@ -53,7 +56,11 @@ export const updateBookingStatus = createAsyncThunk(
 
 const bookingSlice = createSlice({
   name: 'booking',
-  initialState,
+  initialState: {
+    bookings: [] as Booking[],
+    isLoading: false,
+    error: null as string | null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder

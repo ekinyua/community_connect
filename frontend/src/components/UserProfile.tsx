@@ -1,4 +1,5 @@
 // In UserProfile.tsx
+
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link } from '@tanstack/react-router';
@@ -6,6 +7,7 @@ import { AppDispatch, RootState } from '@/services/store';
 import { fetchUserProfile, clearViewedProfile } from '@/services/slices/profileSlice';
 import ProfileDisplay from './ProfileDisplay';
 import AppointmentBooking from './AppointmentBooking';
+import BookedAppointments from './BookedAppointments';
 import RatingSystem from './RatingSystem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,7 +44,8 @@ const UserProfile: React.FC = () => {
           <CardTitle>Book an Appointment</CardTitle>
         </CardHeader>
         <CardContent>
-          <AppointmentBooking userId={userId} availability={viewedProfile.availability} />
+        <AppointmentBooking serviceProviderId={viewedProfile.user._id} availability={viewedProfile.availability} />
+        <BookedAppointments />
         </CardContent>
       </Card>
       <Card>
