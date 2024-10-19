@@ -18,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URI,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -28,7 +28,7 @@ const io = socketIo(server, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URI,
   credentials: true
 }));
 
@@ -80,6 +80,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`http://localhost:${PORT}`));
+const BASE_URL = process.env.BASE_URL || `http://localhost`;
+server.listen(PORT, () => console.log(`${BASE_URL}:${PORT}`));
 
 module.exports = { app, server };

@@ -2,9 +2,19 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link } from '@tanstack/react-router';
 import { AppDispatch, RootState } from '@/services/store';
-import { fetchMessages, sendMessage, addMessage } from '@/services/slices/chatSlice';
+import {
+  fetchMessages,
+  sendMessage,
+  addMessage,
+} from '@/services/slices/chatSlice';
 import { io, Socket } from 'socket.io-client';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,7 +22,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const Chat: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { userId } = useParams({ from: '/chat/$userId' });
-  const { messages, isLoading, error } = useSelector((state: RootState) => state.chat);
+  const { messages, isLoading, error } = useSelector(
+    (state: RootState) => state.chat
+  );
   const authState = useSelector((state: RootState) => state.auth.user);
   const currentUserId = authState?.user?.id; // Update this line
   const [newMessage, setNewMessage] = useState('');
@@ -25,8 +37,11 @@ const Chat: React.FC = () => {
     }
   }, [dispatch, userId]);
 
+  const HOST = import.meta.env.BASE_URL;
+  const PORT = import.meta.env.PORT;
+
   useEffect(() => {
-    socketRef.current = io('http://localhost:3000');
+    socketRef.current = io(`${HOST}:${PORT}`);
     socketRef.current.emit('join', currentUserId);
 
     socketRef.current.on('newMessage', (message: any) => {
@@ -38,7 +53,7 @@ const Chat: React.FC = () => {
         socketRef.current.disconnect();
       }
     };
-  }, [currentUserId, dispatch]);
+  }, [currentUserId, dispatch, HOST, PORT]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -69,10 +84,11 @@ const Chat: React.FC = () => {
               <div
                 key={message._id}
                 className={`mb-2 p-2 rounded ${
-                  message.sender === currentUserId ? 'bg-blue-100 ml-auto' : 'bg-gray-100'
+                  message.sender === currentUserId
+                    ? 'bg-blue-100 ml-auto'
+                    : 'bg-gray-100'
                 }`}
-                style={{ maxWidth: '70%' }}
-              >
+                style={{ maxWidth: '70%' }}>
                 {message.content}
               </div>
             ))}
@@ -80,7 +96,12 @@ const Chat: React.FC = () => {
           </ScrollArea>
         </CardContent>
         <CardFooter>
-          <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex w-full">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="flex w-full">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}

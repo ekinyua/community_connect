@@ -86,7 +86,6 @@ const LandingPage: React.FC = () => {
   };
 
   const handleProfileClick = (userId: string) => {
-    console.log('LandingPage: Clicked user ID:', userId);
     dispatch(fetchUserProfile(userId));
     navigate({
       to: '/profile/$userId',
@@ -218,7 +217,9 @@ const LandingPage: React.FC = () => {
             <CardFooter className="justify-between">
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-400 mr-1" />
-                <span>{profile.rating ? profile.rating.toFixed(1) : 'N/A'}</span>
+                <span>
+                  {profile.rating ? profile.rating.toFixed(1) : 'N/A'}
+                </span>
               </div>
               <Button
                 variant="outline"

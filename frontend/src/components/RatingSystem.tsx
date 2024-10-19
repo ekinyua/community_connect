@@ -13,7 +13,9 @@ interface RatingSystemProps {
 
 const RatingSystem: React.FC<RatingSystemProps> = ({ userId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { reviews, isLoading, error } = useSelector((state: RootState) => state.review);
+  const { reviews, isLoading, error } = useSelector(
+    (state: RootState) => state.review
+  );
   const currentUser = useSelector((state: RootState) => state.auth.user?.user);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -23,39 +25,44 @@ const RatingSystem: React.FC<RatingSystemProps> = ({ userId }) => {
   }, [dispatch, userId]);
 
   const handleSubmitReview = async () => {
-    console.log('Current user:', currentUser);
     if (currentUser && currentUser.id) {
       try {
-        await dispatch(createReview({
-          reviewee: userId,
-          rating,
-          comment,
-        })).unwrap();
+        await dispatch(
+          createReview({
+            reviewee: userId,
+            rating,
+            comment,
+          })
+        ).unwrap();
         setRating(0);
         setComment('');
         toast({
-          title: "Review Submitted",
-          description: "Your review has been successfully submitted.",
+          title: 'Review Submitted',
+          description: 'Your review has been successfully submitted.',
         });
       } catch (error: any) {
         console.error('Error submitting review:', error);
         toast({
-          title: "Error",
-          description: error.message || "An error occurred while submitting the review.",
-          variant: "destructive",
+          title: 'Error',
+          description:
+            error.message || 'An error occurred while submitting the review.',
+          variant: 'destructive',
         });
       }
     } else {
       toast({
-        title: "Error",
-        description: "You must be logged in to submit a review.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'You must be logged in to submit a review.',
+        variant: 'destructive',
       });
     }
   };
 
   if (isLoading) return <div>Loading reviews...</div>;
   if (error) return <div>Error: {error}</div>;
+
+  // Hide the entire component for consumers
+  if (currentUser?.userType === 'consumer') return null;
 
   return (
     <div className="space-y-4">
@@ -88,7 +95,9 @@ const RatingSystem: React.FC<RatingSystemProps> = ({ userId }) => {
           placeholder="Leave a comment..."
           className="mb-2"
         />
-        <Button onClick={handleSubmitReview} disabled={!currentUser}>Submit Review</Button>
+        <Button onClick={handleSubmitReview} disabled={!currentUser}>
+          Submit Review
+        </Button>
       </div>
     </div>
   );

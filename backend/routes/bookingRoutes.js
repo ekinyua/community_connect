@@ -4,10 +4,9 @@ const bookingController = require('../controllers/bookingController');
 const { ensureAuthenticated } = require('../middleware/auth');
 
 router.post('/', ensureAuthenticated, bookingController.createBooking, async (req, res) => {
-  console.log('Received booking request:', req.body);
   try {
     const booking = new Booking(req.body);
-    await booking.validate(); 
+    await booking.validate();
     const savedBooking = await booking.save();
     res.status(201).json({ message: 'Booking created successfully', booking: savedBooking });
   } catch (error) {

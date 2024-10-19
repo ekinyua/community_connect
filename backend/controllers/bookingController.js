@@ -2,10 +2,9 @@ const Booking = require('../models/Booking');
 const User = require('../models/User');
 
 exports.createBooking = async (req, res) => {
-  console.log('Received booking request:', req.body);
   try {
     const { serviceProvider, consumer, date, startTime, endTime, service, status, notes } = req.body;
-    
+
     if (!serviceProvider) {
       return res.status(400).json({ message: 'Service provider is required' });
     }
@@ -50,13 +49,13 @@ exports.getBookingsForServiceProvider = async (req, res) => {
 exports.updateBookingStatus = async (req, res) => {
   try {
     const { bookingId, status } = req.body;
-    
+
     // Update the status of a booking
     const booking = await Booking.findByIdAndUpdate(bookingId, { status }, { new: true });
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
-    
+
     res.json({ message: 'Booking status updated successfully', booking });
   } catch (error) {
     res.status(500).json({ message: 'Error updating booking status', error: error.message });

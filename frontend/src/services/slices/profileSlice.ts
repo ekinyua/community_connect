@@ -63,9 +63,7 @@ export const fetchUserProfile = createAsyncThunk(
       return state.profile.currentUserProfile;
     }
     try {
-      console.log("profileSlice: Fetching user profile for ID:", userId);
       const response = await profileApi.getUserProfile(userId);
-      console.log("profileSlice: Received profile data:", response);
       return response.profile;
     } catch (error) {
       console.error("Error fetching user profile:", error);
@@ -85,10 +83,6 @@ export const fetchCurrentUserProfile = createAsyncThunk(
     }
     try {
       const response = await profileApi.getCurrentUserProfile();
-      console.log(
-        "profileSlice: Received current user profile data:",
-        response
-      );
       return response.profile;
     } catch (error) {
       console.error("Error fetching current user profile:", error);
@@ -136,7 +130,6 @@ const profileSlice = createSlice({
         (state, action: PayloadAction<ProfileData>) => {
           state.isLoading = false;
           state.viewedProfile = action.payload;
-          console.log("profileSlice: Viewed profile set:", action.payload);
         }
       )
       .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -156,10 +149,6 @@ const profileSlice = createSlice({
         (state, action: PayloadAction<ProfileData>) => {
           state.isLoading = false;
           state.currentUserProfile = action.payload;
-          console.log(
-            "profileSlice: Current user profile set:",
-            action.payload
-          );
         }
       )
       .addCase(fetchCurrentUserProfile.rejected, (state, action) => {

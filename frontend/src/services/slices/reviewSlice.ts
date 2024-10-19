@@ -29,8 +29,6 @@ export const createReview = createAsyncThunk(
     try {
       const state = getState() as RootState;
       const reviewer = state.auth.user?.user?.id;
-      console.log('Current state:', state);
-      console.log('Reviewer ID:', reviewer);
       if (!reviewer) {
         throw new Error('User not authenticated');
       }

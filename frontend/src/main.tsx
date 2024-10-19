@@ -7,6 +7,7 @@ import { Provider, useDispatch } from 'react-redux';
 import { AppDispatch, store } from './services/store';
 import { ThemeProvider } from './lib/theme-provider';
 import { fetchCurrentUserProfile } from './services/slices/profileSlice';
+import { Toaster } from './components/ui/toaster';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -18,6 +19,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 const AppWrapper = () => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -37,6 +39,7 @@ if (!rootElement.innerHTML) {
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <Provider store={store}>
           <AppWrapper />
+          <Toaster />
         </Provider>
       </ThemeProvider>
     </StrictMode>

@@ -4,7 +4,10 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link } from '@tanstack/react-router';
 import { AppDispatch, RootState } from '@/services/store';
-import { fetchUserProfile, clearViewedProfile } from '@/services/slices/profileSlice';
+import {
+  fetchUserProfile,
+  clearViewedProfile,
+} from '@/services/slices/profileSlice';
 import ProfileDisplay from './ProfileDisplay';
 import AppointmentBooking from './AppointmentBooking';
 import BookedAppointments from './BookedAppointments';
@@ -15,11 +18,12 @@ import { Button } from '@/components/ui/button';
 const UserProfile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { userId } = useParams({ from: '/profile/$userId' });
-  const { viewedProfile, isLoading, error } = useSelector((state: RootState) => state.profile);
+  const { viewedProfile, isLoading, error } = useSelector(
+    (state: RootState) => state.profile
+  );
 
   useEffect(() => {
     if (userId) {
-      console.log('UserProfile: Fetching profile for user ID:', userId);
       dispatch(fetchUserProfile(userId));
     }
     return () => {
@@ -27,11 +31,24 @@ const UserProfile: React.FC = () => {
     };
   }, [dispatch, userId]);
 
-  console.log('UserProfile: viewedProfile:', viewedProfile);
-
-  if (isLoading) return <Card><CardContent>Loading profile...</CardContent></Card>;
-  if (error) return <Card><CardContent>Error: {error}</CardContent></Card>;
-  if (!viewedProfile) return <Card><CardContent>No profile found for user ID: {userId}</CardContent></Card>;
+  if (isLoading)
+    return (
+      <Card>
+        <CardContent>Loading profile...</CardContent>
+      </Card>
+    );
+  if (error)
+    return (
+      <Card>
+        <CardContent>Error: {error}</CardContent>
+      </Card>
+    );
+  if (!viewedProfile)
+    return (
+      <Card>
+        <CardContent>No profile found for user ID: {userId}</CardContent>
+      </Card>
+    );
 
   return (
     <div className="space-y-4 max-w-4xl mx-auto p-4">
@@ -44,8 +61,11 @@ const UserProfile: React.FC = () => {
           <CardTitle>Book an Appointment</CardTitle>
         </CardHeader>
         <CardContent>
-        <AppointmentBooking serviceProviderId={viewedProfile.user._id} availability={viewedProfile.availability} />
-        <BookedAppointments />
+          <AppointmentBooking
+            serviceProviderId={viewedProfile.user._id}
+            availability={viewedProfile.availability}
+          />
+          <BookedAppointments />
         </CardContent>
       </Card>
       <Card>

@@ -26,20 +26,16 @@ exports.getProfile = async (req, res) => {
   try {
     const userId = req.params.userId;
     if (!userId) {
-      console.log('Backend: User ID is missing in the request');
       return res.status(400).json({ message: 'User ID is required' });
     }
 
-    console.log('Backend: Fetching profile for user ID:', userId);
-    
+
     let profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType basicProfile');
 
     if (!profile) {
-      console.log('Backend: No profile found for user ID:', userId);
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    console.log('Backend: Sending profile:', JSON.stringify(profile, null, 2));
     res.json({ profile });
   } catch (error) {
     console.error('Backend: Error in getProfile:', error);
@@ -51,13 +47,11 @@ exports.getProfile = async (req, res) => {
 exports.getCurrentUserProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log('Fetching current user profile for ID:', userId);
-    
+
     let profile = await Profile.findOne({ user: userId }).populate('user', 'username email userType basicProfile');
 
     if (!profile) {
-      console.log('No profile found, creating a new one');
-      
+
       profile = await Profile.create({
         user: userId,
         bio: req.user.basicProfile?.bio || '',
@@ -68,7 +62,6 @@ exports.getCurrentUserProfile = async (req, res) => {
       await profile.populate('user', 'username email userType basicProfile');
     }
 
-    console.log('Sending current user profile:', profile);
     res.json({ profile });
   } catch (error) {
     console.error('Error in getCurrentUserProfile:', error);

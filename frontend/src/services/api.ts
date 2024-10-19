@@ -4,7 +4,7 @@ import axios, { AxiosError } from 'axios'
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: `/api`,
   withCredentials: true,
 });
 
@@ -91,9 +91,9 @@ export const profileApi = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getCurrentUserProfile: async () => {
     try {
-      console.log('Fetching current user profile');
+      // console.log('Fetching current user profile');
       const response = await api.get('/profiles/me');
-      console.log('Received current user profile:', response.data);
+      // console.log('Received current user profile:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error in getCurrentUserProfile:', error);
@@ -106,19 +106,20 @@ export const profileApi = {
 
   getUserProfile: async (userId: string) => {
     try {
-      console.log('api: Sending request to fetch user profile:', userId);
+      // console.log('api: Sending request to fetch user profile:', userId);
       const response = await api.get(`/profiles/user/${userId}`);
-      console.log('api: Received response:', JSON.stringify(response.data, null, 2));
+      // console.log('api: Received response:', JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (error) {
       console.error('api: Error in getUserProfile:', error);
       if (axios.isAxiosError(error)) {
-        const axiosError: any = error as AxiosError;
+        const axiosError: AxiosError = error as AxiosError;
         if (axiosError.response) {
           console.error('Data:', axiosError.response.data);
           console.error('Status:', axiosError.response.status);
           console.error('Headers:', axiosError.response.headers);
-          throw new Error(`Failed to fetch user profile: ${axiosError.response.data.message || axiosError.message}`);
+          const errorMessage = (axiosError.response.data as { message?: string }).message || axiosError.message;
+          throw new Error(`Failed to fetch user profile: ${errorMessage}`);
         } else if (axiosError.request) {
           console.error('Request:', axiosError.request);
           throw new Error('Failed to fetch user profile: No response received');
@@ -135,10 +136,10 @@ export const profileApi = {
 
 export const bookingApi = {
   createBooking: async (bookingData: Omit<Booking, '_id'>) => {
-    console.log('Sending booking data to server:', bookingData);
+    // console.log('Sending booking data to server:', bookingData);
     try {
       const response = await api.post('/bookings', bookingData);
-      console.log('Server response:', response.data);
+      // console.log('Server response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error in createBooking API call:', error);

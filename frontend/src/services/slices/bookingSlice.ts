@@ -18,10 +18,8 @@ const initialState: BookingState = {
 export const bookAppointment = createAsyncThunk(
   'booking/bookAppointment',
   async (bookingData: Omit<Booking, '_id'>, { rejectWithValue }) => {
-    console.log('Received booking data in thunk:', bookingData);
     try {
       const response = await bookingApi.createBooking(bookingData);
-      console.log('API response:', response);
       return response.booking;
     } catch (error) {
       console.error('Error in bookAppointment thunk:', error);
