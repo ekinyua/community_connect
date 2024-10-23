@@ -1,12 +1,9 @@
 # Community Connect
+![Landing Page](./frontend/public/community-connect-page.png)
 
 ## Project Overview
 
 Community Connect is a platform designed to bridge the gap between local businesses, artisans, and service providers with their immediate community. This application enables users to discover local services, book appointments, and interact directly with service providers through a user-friendly interface.
-
-
-![Landing Page](./frontend/public/community-connect-page.png)
-
 
 ## Features
 
