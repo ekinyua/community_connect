@@ -40,7 +40,7 @@ The project is divided into two main components:
    ```
    cd backend
    npm install
-   npm run start
+   npm run dev
    ```
 
 For more detailed instructions, please refer to the README files in the `frontend/` and `backend/` directories.
